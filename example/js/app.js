@@ -12,7 +12,7 @@ const hideTabContent = () => {
         }
     )
     
-    //remove class который выделяет одну надпись
+    //remove class, который выделяет одну надпись
     tabs.forEach(
         (item) => {
             item.classList.remove("tabheader__item_active");
@@ -33,10 +33,12 @@ hideTabContent();
 showTabContent(); //default i=0
 
 
-//div с надписями - onClick делать выбранный текст активным и показывать соотв. image
+//Div с надписями - onClick делать выбранный текст активным и показывать соотв. image
 tabsParent.addEventListener("click", (event) => {
-    const target = event.target; //e.g. clicked <div ...>
+    clearInterval(autoSlider); //stop auto slider when user chooses something?
 
+    const target = event.target; //e.g. clicked <div ...>
+    
     //только с child items - tabheader__item
     if (target.classList.contains("tabheader__item")) {
         
@@ -49,6 +51,24 @@ tabsParent.addEventListener("click", (event) => {
         });
     }
 })
+
+
+/******************************  AUTO SLIDER  *************************/
+//on page load - change slides every n sec (but only until user chooses something?)
+let slide = 0;
+const slideFreq = 1500;
+const autoSlider = setInterval(() => {
+
+    hideTabContent();
+    showTabContent(slide); 
+    slide++;
+
+    if (slide === tabs.length) { //reset to 0
+        slide = 0;
+    }
+}, slideFreq);
+
+
 
 /******************************  MODAL DIALOGUE  *************************/
 const modal = document.querySelector(".modal");
@@ -65,7 +85,7 @@ const openModal = () => {
 const closeModal = () => {
     modal.classList.add("hide");
     modal.classList.remove("show");
-    document.body.style.overflow = ""; //bring back the overflow
+    document.body.style.overflow = ""; //bring back overflow
 }
 
 modalTrigger.addEventListener("click", openModal);
@@ -74,8 +94,20 @@ closeModalBtn.addEventListener("click", closeModal);
 
 modal.addEventListener("click", (event) => {
     if (event.target === modal) {
-        console.log(event.target);
-        console.log(modal);
+        // console.log(event.target);
+        // console.log(modal);
         closeModal();
     }
+})
+
+
+/****************************** SCROLL END MODAL DIALOGUE  *************************/
+window.addEventListener("scroll", () => {
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight; //document H - window H
+    const scrolled = Math.ceil(window.scrollY);    
+
+    if (scrolled === scrollHeight) {
+        openModal();
+    }
+
 })
