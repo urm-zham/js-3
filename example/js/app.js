@@ -111,3 +111,56 @@ window.addEventListener("scroll", () => {
     }
 
 })
+
+const forms = document.querySelectorAll("form"); //array of all existing forms
+
+//перебираем все формы
+forms.forEach((item) => {
+    postData(item); //POST
+})
+
+//show message to the user
+const msg = {
+    loading: "Идет загрузка...",
+    success: "Спасибо, скоро свяжемся с вами!",
+    fail: "Что-то пошло не так"
+}
+
+//POST function, pass whole form as an argument
+function postData(form) {
+    form.addEventListener("submit", (e) => {
+
+        // console.log(form); //our form only
+        e.preventDefault(); //stop refresh on submit
+
+        const msgBlock = document.createElement("div");
+        msgBlock.textContent = msg.loading; //default?
+        form.append(msgBlock);
+
+        const req = new XMLHttpRequest(); 
+        req.open("POST", "server.php");
+        req.setRequestHeader("Content-type", "application/json");
+
+        const formData = new FormData(form); //все поля формы
+        const obj = {};
+        formData.forEach((item, i) => {
+            obj[i] = item; //все данные с формы положили в object; i=key, item=value, object[key] = value
+        })
+
+        const json = JSON.stringify(obj); //object to string
+
+        req.send(json); //отправляем объект в виде строки на сервер
+
+        req.addEventListener("load", () => { //on request load  - check response
+            console.log(req.status);
+            if (req.status === 200) { //200 успешно
+                msgBlock.textContent = msg.success;
+                msgBlock.style.color = "green";
+            } else {
+                msgBlock.textContent = msg.fail;
+                msgBlock.style.color = "red";
+            }
+        })
+
+    })
+}
