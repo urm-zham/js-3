@@ -102,15 +102,23 @@ modal.addEventListener("click", (event) => {
 
 
 /****************************** SCROLL END MODAL DIALOGUE  *************************/
-window.addEventListener("scroll", () => {
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight; //document H - window H
-    const scrolled = Math.ceil(window.scrollY);    
+// window.addEventListener("scroll", () => {
+//     const scrollHeight = document.documentElement.scrollHeight - window.innerHeight; //document H - window H
+//     const scrolled = Math.ceil(window.scrollY);    
+//     if (scrolled === scrollHeight) {
+//         openModal();
+//     }
 
-    if (scrolled === scrollHeight) {
+// })
+//кажется чуть быстрее работает
+window.onscroll = function() {
+    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
         openModal();
     }
+   }
 
-})
+   
+/****************************** FORM POST  *************************/   
 
 const forms = document.querySelectorAll("form"); //array of all existing forms
 
@@ -156,9 +164,13 @@ function postData(form) {
             if (req.status === 200) { //200 успешно
                 msgBlock.textContent = msg.success;
                 msgBlock.style.color = "green";
+                msgBlock.style.textAlign = "center";
+                msgBlock.style.marginTop = "10px";
             } else {
                 msgBlock.textContent = msg.fail;
                 msgBlock.style.color = "red";
+                msgBlock.style.textAlign = "center";
+                msgBlock.style.marginTop = "10px";
             }
         })
 
