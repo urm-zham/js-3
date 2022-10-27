@@ -124,7 +124,7 @@ const forms = document.querySelectorAll("form"); //array of all existing forms
 
 //перебираем все формы
 forms.forEach((item) => {
-    postData(item); //POST
+    bindPostData(item); //POST
 })
 
 //show message to the user
@@ -134,8 +134,21 @@ const msg = {
     fail: "Что-то пошло не так"
 }
 
-//POST function, pass whole form as an argument
-function postData(form) {
+
+const postData = (url, data) => {
+    const res = fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: data
+    });
+
+    return res;
+
+}
+//bindPostData function, pass whole form as an argument
+function bindPostData(form) {
     form.addEventListener("submit", (e) => {
 
         // console.log(form); //our form only
@@ -145,9 +158,9 @@ function postData(form) {
         msgBlock.textContent = msg.loading; //default?
         form.append(msgBlock);
 
-        const req = new XMLHttpRequest(); 
-        req.open("POST", "server.php");
-        req.setRequestHeader("Content-type", "application/json");
+        // const req = new XMLHttpRequest(); 
+        // req.open("POST", "server.php");
+        // req.setRequestHeader("Content-type", "application/json");
 
         const formData = new FormData(form); //все поля формы
         const obj = {};
@@ -157,22 +170,29 @@ function postData(form) {
 
         const json = JSON.stringify(obj); //object to string
 
-        req.send(json); //отправляем объект в виде строки на сервер
+        postData("server.php", json)
+        .then((data) => console.log("success"))
+        .catch((e) => console.error("error " + e))
+        .finally(() => setTimeout(() => {
+            closeModal();
+        }, 3000));
 
-        req.addEventListener("load", () => { //on request load  - check response
-            console.log(req.status);
-            if (req.status === 200) { //200 успешно
-                msgBlock.textContent = msg.success;
-                msgBlock.style.color = "green";
-                msgBlock.style.textAlign = "center";
-                msgBlock.style.marginTop = "10px";
-            } else {
-                msgBlock.textContent = msg.fail;
-                msgBlock.style.color = "red";
-                msgBlock.style.textAlign = "center";
-                msgBlock.style.marginTop = "10px";
-            }
-        })
+        // req.send(json); //отправляем объект в виде строки на сервер
+
+        // req.addEventListener("load", () => { //on request load  - check response
+        //     console.log(req.status);
+        //     if (req.status === 200) { //200 успешно
+        //         msgBlock.textContent = msg.success;
+        //         msgBlock.style.color = "green";
+        //         msgBlock.style.textAlign = "center";
+        //         msgBlock.style.marginTop = "10px";
+        //     } else {
+        //         msgBlock.textContent = msg.fail;
+        //         msgBlock.style.color = "red";
+        //         msgBlock.style.textAlign = "center";
+        //         msgBlock.style.marginTop = "10px";
+        //     }
+        // })
 
     })
 }
