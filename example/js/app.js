@@ -147,6 +147,11 @@ const postData = (url, data) => {
     return res;
 
 }
+
+const msgBlock = document.createElement("div");
+msgBlock.textContent = msg.loading; //default?
+msgBlock.classList.add("resp_msg");
+
 //bindPostData function, pass whole form as an argument
 function bindPostData(form) {
     form.addEventListener("submit", (e) => {
@@ -154,9 +159,9 @@ function bindPostData(form) {
         // console.log(form); //our form only
         e.preventDefault(); //stop refresh on submit
 
-        const msgBlock = document.createElement("div");
-        msgBlock.textContent = msg.loading; //default?
-        form.append(msgBlock);
+        if (form.querySelector(".resp_msg") === null) {
+            form.append(msgBlock);
+        }
 
         // const req = new XMLHttpRequest(); 
         // req.open("POST", "server.php");
@@ -171,8 +176,21 @@ function bindPostData(form) {
         const json = JSON.stringify(obj); //object to string
 
         postData("server.php", json)
-        .then((data) => console.log("success"))
-        .catch((e) => console.error("error " + e))
+        .then((data) => {
+            console.log("success");
+            
+            msgBlock.textContent = msg.success;
+            msgBlock.style.color = "green";
+            msgBlock.style.textAlign = "center";
+            msgBlock.style.marginTop = "10px";
+        })
+        .catch((e) => {
+            console.error("Error: " + e);
+            msgBlock.textContent = msg.fail;
+            msgBlock.style.color = "red";
+            msgBlock.style.textAlign = "center";
+            msgBlock.style.marginTop = "10px";
+        })
         .finally(() => setTimeout(() => {
             closeModal();
         }, 3000));
